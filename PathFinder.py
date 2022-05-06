@@ -1,4 +1,3 @@
-import enum
 from click import clear
 import numpy as np
 import random as rd
