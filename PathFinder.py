@@ -1,6 +1,6 @@
 from enum import Enum, auto
 from functools import reduce
-from typing import NamedTuple
+from typing import NamedTuple, Iterator
 from click import clear
 import random as rd
 import numpy as np
@@ -19,7 +19,7 @@ DIRECTIONS = ((-1,0),
               (0,-1),
               (0,1))
 
-DELAY = 0.01
+DELAY = 0.05
 
 RIDICULOUSLY_BIG_DISTANCE = 10000
 
@@ -92,27 +92,28 @@ def check_move_for_collision_and_distance(move : PossibleMove, target_point, pla
              .then(get_distance_from_target(target_point))
              .flush())
 
-def generate_possible_moves(actual_point) -> tuple[PossibleMove]:
+def generate_possible_moves(actual_point) -> Iterator[PossibleMove]:
     
-    return tuple(PossibleMove(move_in_x = actual_point[0] + direction[0], move_in_y = actual_point[1] + direction[1]) for direction in DIRECTIONS)
+    return (PossibleMove(move_in_x = actual_point[0] + direction[0], move_in_y = actual_point[1] + direction[1]) for direction in DIRECTIONS)
 
 @curry(3)
-def check_all_moves_for_collision_and_distance(target_point, playground, possible_moves : tuple[PossibleMove]) -> tuple[PossibleMove]:
+def check_all_moves_for_collision_and_distance(target_point, playground, possible_moves : Iterator[PossibleMove]) -> Iterator[PossibleMove]:
 
-    return [check_move_for_collision_and_distance(move, target_point, playground) for move in possible_moves]
+    return (check_move_for_collision_and_distance(move, target_point, playground) for move in possible_moves)
 
-def filter_feasible_moves(checked_moves : tuple[PossibleMove]) -> tuple[PossibleMove]:
+def filter_feasible_moves(checked_moves : Iterator[PossibleMove]) -> Iterator[PossibleMove]:
     
-    return tuple(filter(lambda x: x.is_in_collision == False, checked_moves))
+    return filter(lambda x: x.is_in_collision == False, checked_moves)
 
-def select_next_move(filtered_moves : tuple[PossibleMove]) -> PossibleMove:
-
-    if filtered_moves == (): return None
+def select_next_move(filtered_moves : Iterator[PossibleMove]) -> PossibleMove:
     
-    else:
+    try:
         next_move : PossibleMove = reduce(lambda x, y: x if x.distance < y.distance else y, 
                                           filtered_moves, PossibleMove(None, None, distance = RIDICULOUSLY_BIG_DISTANCE))
         return next_move
+    except:
+        return None
+        
 
 
 def print_current_move(actual_point, playground) -> list[list[str]]:
