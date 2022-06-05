@@ -1,4 +1,5 @@
-from .types import PlaygroundParameters
+from app.types import PlaygroundParameters
+
 
 def cli_input() -> PlaygroundParameters:
     x_size = int(input("Entry x size of playground: "))
