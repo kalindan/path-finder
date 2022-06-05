@@ -53,7 +53,7 @@ def filter_feasible_moves(
     return filter(lambda x: x.is_in_collision == False, checked_moves)
 
 
-def select_next_move(filtered_moves: Iterator[PossibleMove]) -> PossibleMove:
+def select_next_move(filtered_moves: Iterator[PossibleMove]) -> PossibleMove | None:
     try:
         next_move: PossibleMove = reduce(
             lambda x, y: x if x.distance < y.distance else y,
@@ -65,19 +65,11 @@ def select_next_move(filtered_moves: Iterator[PossibleMove]) -> PossibleMove:
         return None
 
 
-def is_in_target(next_move: PossibleMove) -> bool:
-    return next_move.distance == 0
-
-
-def is_next_move_unavailable(next_move: PossibleMove) -> bool:
-    return next_move == None
-
-
-def evaluate_next_progress(actual_point, target_point, playground, next_move: PossibleMove) -> None:
-    if is_next_move_unavailable(next_move):
+def evaluate_next_progress(actual_point, target_point, playground, next_move: PossibleMove | None) -> None:
+    if next_move == None:
         return print("You have run out of options")
     print_playground_with_current_move(actual_point, playground, PLaygroundMarks)
-    if is_in_target(next_move):
+    if next_move.distance == 0:
         return print("You have reached the target")
     return find_path((next_move.move_in_x, next_move.move_in_y), target_point, playground)
 
