@@ -1,3 +1,3 @@
 # Path finder
 
-Little game which generates 2D field, random obstacles, start and target positions, and hopefully finds a way without hitting anything
+Console app which generates 2D field, random obstacles, start and target positions, and hopefully finds a way without from start to target without hitting anything or getting stucked.
